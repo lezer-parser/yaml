@@ -1,0 +1,19 @@
+# Simple sequence
+
+- one
+- two
+- three
+
+==>
+
+Stream(Document(BlockSequence(Literal,Literal,Literal)))
+
+# Nested sequence
+
+- - one
+  - two
+- three
+
+==>
+
+Stream(Document(BlockSequence(BlockSequence(Literal,Literal),Literal)))

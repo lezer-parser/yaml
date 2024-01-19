@@ -8,7 +8,7 @@
     "import": "./dist/index.es.js",
     "require": "./dist/index.cjs"
   },
-  "module": "dist/index.es.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "Marijn Haverbeke <marijnh@gmail.com>",
   "license": "MIT",
@@ -30,6 +30,6 @@
     "build": "lezer-generator src/yaml.grammar -o src/parser && rollup -c",
     "build-debug": "lezer-generator src/yaml.grammar --names -o src/parser && rollup -c",
     "prepare": "npm run build",
-    "test": "npm run build && mocha test/test-yaml.js"
+    "test": "mocha test/test-yaml.js"
   }
 }
