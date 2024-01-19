@@ -6,7 +6,7 @@
 
 ==>
 
-Stream(Document(BlockSequence(Literal,Literal,Literal)))
+Stream(Document(BlockSequence(Item(Literal),Item(Literal),Item(Literal))))
 
 # Nested sequence
 
@@ -16,4 +16,4 @@ Stream(Document(BlockSequence(Literal,Literal,Literal)))
 
 ==>
 
-Stream(Document(BlockSequence(BlockSequence(Literal,Literal),Literal)))
+Stream(Document(BlockSequence(Item(BlockSequence(Item(Literal),Item(Literal))),Item(Literal))))

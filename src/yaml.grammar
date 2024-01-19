@@ -5,33 +5,40 @@ Document {
   Directive+ DirectiveEnd? element*
 }
 
-element {
-  elementAtom |
+value {
+  valueAtom |
   BlockSequence |
-  BlockMapping |
-  Reference |
-  TypedElement { TypeTag element } |
-  NamedElement { NameTag element }
+  BlockMapping
 }
 
-elementAtom {
+valueAtom {
   QuotedLiteral |
   Literal |
   FlowSequence |
   FlowMapping
 }
 
+element {
+  (Tag Anchor? | Anchor Tag?)? value | Alias
+}
+
+elementAtom {
+  (Tag Anchor? | Anchor Tag?)? valueAtom | Alias
+}
+
 FlowSequence { "[" (elementAtom ",")* elementAtom? "]" }
 FlowMapping { "{" (elementAtom ":" elementAtom ",")* elementAtom? "}" }
 
 BlockSequence {
-  (sequenceStartMark element?)
-  (sequenceContinueMark element?)*
+  Item { sequenceStartMark element? }
+  Item { sequenceContinueMark element? }*
   blockEnd
 }
 
 BlockMapping {
-  "@FIXME" //  (("@KEY" | "?" elementAtom?) ":" element?)+ dedent
+  Pair { mapStartMark elementAtom ":" element? | explicitMapStartMark element? (":" element)? }
+  Pair { mapContinueMark elementAtom ":" element? | explicitMapContinueMark element? (":" element)? }*
+  blockEnd
 }
 
 @skip { whitespace | linebreak | Comment }
@@ -44,29 +51,28 @@ BlockMapping {
   DocEnd
 }
 
-@external tokens sequence from "./tokens.js" {
+@external tokens blockMark from "./tokens.js" {
   sequenceStartMark[@name="-"]
   sequenceContinueMark[@name="-"]
+  explicitMapStartMark[@name="?"]
+  explicitMapContinueMark[@name="?"]
+  mapStartMark
+  mapContinueMark
+}
+
+@external tokens literals from "./tokens.js" {
+  Literal[isolate]
+  QuotedLiteral[isolate]
+  Anchor
+  Alias
+  Tag
 }
 
 @tokens {
   whitespace { $[ \t]+ }
   linebreak { $[\n\r] }
-  QuotedLiteral {
-    '"' (!["\\] | "\\" _)* '"'? |
-    "'" (!['] | "''")* "'"?
-  }
   Directive { "%" ![\n]* }
   Comment { "#" ![\n]* }
-
-  anchorChar { $[!-+\--Z\\^-z|~\u00a0-\ud7ff\ue000-\ufffd\u{10000}-\u{10ffff}] }
-  Reference { "*" anchorChar+ }
-  NameTag { "&" anchorChar+ }
-  TypeTag { "!" (anchorChar* "!")? anchorChar+ }
-
-  safe { ![-?:,\[\]{}#&*!|>'"%@` \t\r\n] }
-
-  Literal { safe ($[ \t]* safe)* } // FIXME
 
   "["[@export=BracketL] "]"
   "{"[@export=BraceL] "}"

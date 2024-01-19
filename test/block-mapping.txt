@@ -1,0 +1,8 @@
+# Simple Mapping
+
+One: A
+Two: B
+
+==>
+
+Stream(Document(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))))

@@ -1,7 +1,10 @@
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
-  DirectiveEnd, DocEnd,
-  sequenceStartMark, sequenceContinueMark, blockEnd,
+  DirectiveEnd, DocEnd, blockEnd,
+  sequenceStartMark, sequenceContinueMark,
+  explicitMapStartMark, explicitMapContinueMark,
+  mapStartMark, mapContinueMark,
+  Literal, QuotedLiteral, Anchor, Alias, Tag,
   BracketL, BraceL, FlowSequence, FlowMapping
 } from "./parser.terms.js"
 
@@ -21,12 +24,20 @@ class Context {
 function findColumn(input, pos) {
   for (let col = 0, p = pos - input.pos - 1;; p--, col++) {
     let ch = input.peek(p)
-    if (ch == 10 || ch == 13 || ch == -1) return col
+    if (isBreakSpace(ch) || ch == -1) return col
   }
 }
 
+function isNonBreakSpace(ch) {
+  return ch == 32 || ch == 9
+}
+
+function isBreakSpace(ch) {
+  return ch == 10 || ch == 13
+}
+
 function isSpace(ch) {
-  return ch == 32 || ch == 9 || ch == 10 || ch == 13 || ch < 0
+  return isNonBreakSpace(ch) || isBreakSpace(ch)
 }
 
 export const indentation = new ContextTracker({
@@ -35,10 +46,14 @@ export const indentation = new ContextTracker({
     return context.type == type_Flow && (term == FlowSequence || term == FlowMapping) ? context.parent : context
   },
   shift(context, term, stack, input) {
-    if (term == sequenceStartMark) return new Context(context, findColumn(input, input.pos), type_Seq)
-    // FIXME mapStartMark
-    if (term == blockEnd) return context.parent
-    if (term == BracketL || term == BraceL) return new Context(context, 0, type_Flow)
+    if (term == sequenceStartMark)
+      return new Context(context, findColumn(input, input.pos), type_Seq)
+    if (term == mapStartMark || term == explicitMapStartMark)
+      return new Context(context, findColumn(input, input.pos), type_Map)
+    if (term == blockEnd)
+      return context.parent
+    if (term == BracketL || term == BraceL)
+      return new Context(context, 0, type_Flow)
     return context
   },
   hash(context) { return context.hash }
@@ -48,7 +63,7 @@ export const newlines = new ExternalTokenizer((input, stack) => {
   if (input.next == -1 && stack.canShift(blockEnd))
     return input.acceptToken(blockEnd)
   let prev = input.peek(-1)
-  if ((prev == 10 /* '\n' */ || prev == 13 /* '\r' */ || prev < 0) && stack.context.type != type_Flow) {
+  if ((isBreakSpace(prev) || prev < 0) && stack.context.type != type_Flow) {
     if (input.next == 45 /* '-' */ && input.peek(1) == 45 && input.peek(2) == 45 && isSpace(input.peek(3)))
       return input.acceptToken(DirectiveEnd, 3)
     if (input.next == 46 /* '.' */ && input.peek(1) == 46 && input.peek(2) == 46 && isSpace(input.peek(3)))
@@ -62,11 +77,171 @@ export const newlines = new ExternalTokenizer((input, stack) => {
   }
 }, {contextual: true})
 
-export const sequence = new ExternalTokenizer((input, stack) => {
+export const blockMark = new ExternalTokenizer((input, stack) => {
   if (input.next == 45 /* '-' */) {
     input.advance()
-    if (input.next == 10 || input.next == 32 || input.next == 9)
+    if (isSpace(input.next))
       input.acceptToken(stack.context.type == type_Seq && stack.context.depth == findColumn(input, input.pos - 1)
                         ? sequenceContinueMark : sequenceStartMark)
+  } else if (input.next == 63 /* '?' */) {
+    input.advance()
+    if (isSpace(input.next))
+      input.acceptToken(stack.context.type == type_Map && stack.context.depth == findColumn(input, input.pos - 1)
+                        ? explicitMapContinueMark : explicitMapStartMark)
+  } else {
+    let start = input.pos
+    // Scan over a potential key to see if it is followed by a colon.
+    for (;;) {
+      if (isNonBreakSpace(input.next)) {
+        input.advance()
+      } else if (input.next == 33 /* '!' */) {
+        readTag(input)
+      } else if (input.next == 38 /* '&' */) {
+        readAnchor(input)
+      } else if (input.next == 42 /* '*' */) {
+        readAnchor(input)
+        break
+      } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
+        if (readQuoted(input, true)) break
+        return
+      } else if (readPlain(input, true, false, 0)) {
+        break
+      } else {
+        return
+      }
+    }
+    while (isNonBreakSpace(input.next)) input.advance()
+    if (input.next == 58 /* ':' */)
+      input.acceptTokenTo(stack.context.type == type_Map && stack.context.depth == findColumn(input, start)
+                          ? mapContinueMark : mapStartMark, start)
   }
 }, {contextual: true})
+
+function uriChar(ch) {
+  return ch > 32 && ch < 127 && ch != 34 && ch != 37 && ch != 60 &&
+    ch != 62 && ch != 92 && ch != 94 && ch != 96 && ch != 123 && ch != 124 && ch != 125
+}
+
+function hexChar(ch) {
+  return ch >= 48 && ch <= 57 || ch >= 97 && ch <= 102 || ch >= 65 && ch <= 70
+}
+
+function readUriChar(input) {
+  if (input.next == 37 /* '%' */) {
+    input.advance()
+    if (hexChar(input.next)) input.advance()
+    if (hexChar(input.next)) input.advance()
+    return true
+  } else if (uriChar(input.next)) {
+    input.advance()
+    return true
+  }
+  return false
+}
+
+function readTag(input) {
+  input.advance() // !
+  if (input.next == 60 /* '<' */) {
+    input.advance()
+    for (;;) {
+      if (!readUriChar(input)) {
+        if (input.next == 62 /* '>' */) input.advance()
+        break
+      }
+    }
+  } else {
+    while (readUriChar(input)) {}
+  }
+}
+
+function readAnchor(input) {
+  input.advance()
+  while (!isSpace(input.next) && safeCharTag(input.tag) != "f") input.advance()
+}
+  
+function readQuoted(input, scan) {
+  let quote = input.next, lineBreak = false, start = input.pos
+  input.advance()
+  for (;;) {
+    let ch = input.next
+    if (ch < 0) break
+    input.advance()
+    if (ch == quote) {
+      if (ch == 39 /* "'" */) {
+        if (input.next == 39) input.advance()
+        else break
+      } else {
+        break
+      }
+    } else if (ch == 92 /* "\\" */ && quote == 34 /* '"' */) {
+      if (input.next >= 0) input.advance()
+    } else if (isBreakSpace(ch)) {
+      if (scan) return false
+      lineBreak = true
+    } else if (scan && input.pos >= start + 1024) {
+      return false
+    }
+  }
+  return !lineBreak
+}
+
+// "Safe char" info for char codes 36 to 125. s: safe, u: unsafe, f: unsafe, disallowed in flow
+const safeTable = "suuussusfussssssssssssusssuuussssssssssssssssssssssssssfsfssussssssssssssssssssssssssssfuf"
+
+function safeCharTag(ch) {
+  if (ch < 36) return "u"
+  if (ch > 125) return "s"
+  return safeTable[ch - 36]
+}
+
+function isSafe(ch, excludeFlow) {
+  let tag = safeCharTag(ch)
+  return excludeFlow ? tag == "s" : tag != "u"
+}
+
+function readPlain(input, scan, inFlow, indent) {
+  if (isSafe(input.next, true) ||
+      (input.next == 63 /* '?' */ || input.next == 58 /* ':' */ || input.next == 45 /* '-' */) &&
+      isSafe(input.peek(1), inFlow)) {
+    input.advance()
+  } else {
+    return false
+  }
+  let start = input.pos
+  for (;;) {
+    let next = input.next, off = 0, lineIndent = indent + 1
+    while (isSpace(next)) {
+      if (isBreakSpace(next)) {
+        if (scan) return false
+        lineIndent = 0
+      } else {
+        lineIndent++
+      }
+      next = input.peek(++off)
+    }
+    if (next < 0 || !isSafe(next, inFlow) ||
+        !inFlow && lineIndent <= indent ||
+        next == 58 /* ':' */ && input.peek(off + 1) == 32 /* ' ' */ ||
+        next == 32 /* ' ' */ && input.peek(off + 1) == 35 /* '#' */) break
+    if (scan && safeCharTag(next) == "f") return false
+    for (let i = off; i >= 0; i--) input.advance()
+    if (scan && input.pos > start + 1024) return false
+  }
+  return true
+}
+
+export const literals = new ExternalTokenizer((input, stack) => {
+  if (input.next == 33 /* '!' */) {
+    readTag(input)
+    input.acceptToken(Tag)
+  } else if (input.next == 38 /* '&' */ || input.next == 42 /* '*' */) {
+    let token = input.next == 38 ? Anchor : Alias
+    readAnchor(input)
+    input.acceptToken(token)
+  } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
+    readQuoted(input, false)
+    input.acceptToken(QuotedLiteral)
+  } else if (readPlain(input, false, stack.context.type == type_Flow, stack.context.depth)) {
+    input.acceptToken(Literal)
+  }
+})

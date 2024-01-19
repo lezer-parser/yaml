@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@lezer/highlight": "^1.0.0",
-    "@lezer/lr": "^1.0.0"
+    "@lezer/lr": "^1.4.0"
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,7 @@
     "build": "lezer-generator src/yaml.grammar -o src/parser && rollup -c",
     "build-debug": "lezer-generator src/yaml.grammar --names -o src/parser && rollup -c",
     "prepare": "npm run build",
-    "test": "mocha test/test-yaml.js"
+    "test": "mocha test/test-yaml.js",
+    "check": "npm run build-debug && npm run test"
   }
 }
