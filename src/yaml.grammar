@@ -26,8 +26,16 @@ elementAtom {
   (Tag Anchor? | Anchor Tag?)? valueAtom | Alias
 }
 
-FlowSequence { "[" (elementAtom ",")* elementAtom? "]" }
-FlowMapping { "{" (elementAtom ":" elementAtom ",")* elementAtom? "}" }
+flowPair[@name=Pair] {
+  elementAtom ":" elementAtom? |
+  flowMapMark elementAtom? ":" elementAtom?
+}
+
+flowSeqElement { elementAtom | FlowMapping { flowPair } }
+
+FlowSequence { "[" (flowSeqElement ",")* flowSeqElement? "]" }
+
+FlowMapping { "{" (flowPair ",")* flowPair? "}" }
 
 BlockSequence {
   Item { sequenceStartMark element? }
@@ -56,6 +64,7 @@ BlockMapping {
   sequenceContinueMark[@name="-"]
   explicitMapStartMark[@name="?"]
   explicitMapContinueMark[@name="?"]
+  flowMapMark[@name="?"]
   mapStartMark
   mapContinueMark
 }

@@ -6,3 +6,11 @@ Two: B
 ==>
 
 Stream(Document(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))))
+
+# Semicolon in atom
+
+foo:bar
+
+==>
+
+Stream(Document(Literal))

@@ -3,7 +3,7 @@ import {
   DirectiveEnd, DocEnd, blockEnd,
   sequenceStartMark, sequenceContinueMark,
   explicitMapStartMark, explicitMapContinueMark,
-  mapStartMark, mapContinueMark,
+  mapStartMark, mapContinueMark, flowMapMark,
   Literal, QuotedLiteral, Anchor, Alias, Tag,
   BracketL, BraceL, FlowSequence, FlowMapping
 } from "./parser.terms.js"
@@ -78,6 +78,14 @@ export const newlines = new ExternalTokenizer((input, stack) => {
 }, {contextual: true})
 
 export const blockMark = new ExternalTokenizer((input, stack) => {
+  if (stack.context.type == type_Flow) {
+    if (input.next == 63 /* '?' */) {
+      input.advance()
+      if (isSpace(input.next) || input.next < 0)
+        input.acceptToken(flowMapMark)
+    }
+    return
+  }
   if (input.next == 45 /* '-' */) {
     input.advance()
     if (isSpace(input.next))
@@ -85,7 +93,7 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
                         ? sequenceContinueMark : sequenceStartMark)
   } else if (input.next == 63 /* '?' */) {
     input.advance()
-    if (isSpace(input.next))
+    if (isSpace(input.next) || input.next < 0)
       input.acceptToken(stack.context.type == type_Map && stack.context.depth == findColumn(input, input.pos - 1)
                         ? explicitMapContinueMark : explicitMapStartMark)
   } else {
@@ -111,9 +119,12 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
       }
     }
     while (isNonBreakSpace(input.next)) input.advance()
-    if (input.next == 58 /* ':' */)
-      input.acceptTokenTo(stack.context.type == type_Map && stack.context.depth == findColumn(input, start)
-                          ? mapContinueMark : mapStartMark, start)
+    if (input.next == 58 /* ':' */) {
+      let after = input.peek(1)
+      if (isSpace(after) || after < 0)
+        input.acceptTokenTo(stack.context.type == type_Map && stack.context.depth == findColumn(input, start)
+                            ? mapContinueMark : mapStartMark, start)
+    }
   }
 }, {contextual: true})
 
@@ -219,10 +230,11 @@ function readPlain(input, scan, inFlow, indent) {
       }
       next = input.peek(++off)
     }
-    if (next < 0 || !isSafe(next, inFlow) ||
-        !inFlow && lineIndent <= indent ||
-        next == 58 /* ':' */ && input.peek(off + 1) == 32 /* ' ' */ ||
-        next == 32 /* ' ' */ && input.peek(off + 1) == 35 /* '#' */) break
+    let safe = next >= 0 &&
+        (next == 58 /* ':' */ ? input.peek(off + 1) != 32 /* ' ' */ :
+         next == 32 /* ' ' */ ? input.peek(off + 1) != 35 /* '#' */ :
+         isSafe(next, inFlow))
+    if (!safe || !inFlow && lineIndent <= indent) break
     if (scan && safeCharTag(next) == "f") return false
     for (let i = off; i >= 0; i--) input.advance()
     if (scan && input.pos > start + 1024) return false

@@ -1,0 +1,22 @@
+# Simple flow values
+
+{foo: [bar, baz],
+ bar: "one
+two three"}
+
+==>
+
+Stream(Document(FlowMapping(
+  Pair(Literal,FlowSequence(Literal,Literal)),
+  Pair(Literal,QuotedLiteral))))
+
+# Pairs
+
+[one: two, ? : four, x: ]
+
+==>
+
+Stream(Document(FlowSequence(
+  FlowMapping(Pair(Literal,Literal)),
+  FlowMapping(Pair(Literal)),
+  FlowMapping(Pair(Literal)))))
