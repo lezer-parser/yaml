@@ -1,14 +1,23 @@
-@top Stream { Document? (DocEnd Document?)* }
+@top Stream { DocEnd? Document (DocEnd (!continue Document)? | directiveDocument)* }
+
+@precedence { continue }
 
 Document {
+  DirectiveEnd element? |
   DirectiveEnd? element |
-  Directive+ DirectiveEnd? element?
+  Directive+ DirectiveEnd element?
+}
+
+directiveDocument[@name=Document] {
+  DirectiveEnd element? |
+  Directive+ DirectiveEnd element?
 }
 
 value {
   valueAtom |
   BlockSequence |
-  BlockMapping
+  BlockMapping |
+  BlockLiteral
 }
 
 valueAtom {
@@ -62,6 +71,12 @@ BlockMapping {
   blockEnd
 }
 
+@skip {} {
+  BlockLiteral {
+    BlockLiteralHeader whitespace? Comment? linebreak BlockLiteralContent
+  }
+}
+
 @skip { whitespace | linebreak | Comment }
 
 @context indentation from "./tokens.js"
@@ -90,11 +105,22 @@ BlockMapping {
   Tag
 }
 
+@external tokens blockLiteral from "./tokens.js" {
+  BlockLiteralContent
+}
+
 @tokens {
   whitespace { $[ \t]+ }
   linebreak { $[\n\r] }
   Directive { "%" ![\n]* }
   Comment { "#" ![\n]* }
+
+  indentationIndicator { $[1-9] }
+  chompingIndicator { $[+-] }
+  BlockLiteralHeader {
+    ("|" | ">")
+    (indentationIndicator chompingIndicator? | chompingIndicator indentationIndicator?)?
+  }
 
   "["[@export=BracketL] "]"
   "{"[@export=BraceL] "}"

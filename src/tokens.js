@@ -5,6 +5,7 @@ import {
   explicitMapStartMark, explicitMapContinueMark,
   mapStartMark, mapContinueMark, flowMapMark,
   Literal, QuotedLiteral, Anchor, Alias, Tag,
+  BlockLiteralContent,
   BracketL, BraceL, FlowSequence, FlowMapping
 } from "./parser.terms.js"
 
@@ -40,6 +41,10 @@ function isSpace(ch) {
   return isNonBreakSpace(ch) || isBreakSpace(ch)
 }
 
+function isSep(ch) {
+  return ch < 0 || isSpace(ch)
+}
+
 export const indentation = new ContextTracker({
   start: Context.top,
   reduce(context, term) {
@@ -64,13 +69,19 @@ export const newlines = new ExternalTokenizer((input, stack) => {
     return input.acceptToken(blockEnd)
   let prev = input.peek(-1)
   if ((isBreakSpace(prev) || prev < 0) && stack.context.type != type_Flow) {
-    if (input.next == 45 /* '-' */ && input.peek(1) == 45 && input.peek(2) == 45 && isSpace(input.peek(3)))
-      return input.acceptToken(DirectiveEnd, 3)
-    if (input.next == 46 /* '.' */ && input.peek(1) == 46 && input.peek(2) == 46 && isSpace(input.peek(3)))
-      return input.acceptToken(DocEnd, 3)
+    if (input.next == 45 /* '-' */ && input.peek(1) == 45 && input.peek(2) == 45 && isSep(input.peek(3))) {
+      if (stack.canShift(blockEnd)) input.acceptToken(blockEnd)
+      else return input.acceptToken(DirectiveEnd, 3)
+    }
+    if (input.next == 46 /* '.' */ && input.peek(1) == 46 && input.peek(2) == 46 && isSep(input.peek(3))) {
+      if (stack.canShift(blockEnd)) input.acceptToken(blockEnd)
+      else return input.acceptToken(DocEnd, 3)
+    }
     let depth = 0
     while (input.next == 32 /* ' ' */) { depth++; input.advance() }
-    if (depth < stack.context.depth &&
+    if ((depth < stack.context.depth ||
+         depth == stack.context.depth && stack.context.type == type_Seq &&
+         (input.next != 45 /* '-' */ || !isSep(input.peek(1)))) &&
         // Not blank
         input.next != -1 && input.next != 10 && input.next != 13 && input.next != 35 /* '#' */)
       input.acceptToken(blockEnd, -depth)
@@ -81,19 +92,18 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
   if (stack.context.type == type_Flow) {
     if (input.next == 63 /* '?' */) {
       input.advance()
-      if (isSpace(input.next) || input.next < 0)
-        input.acceptToken(flowMapMark)
+      if (isSep(input.next)) input.acceptToken(flowMapMark)
     }
     return
   }
   if (input.next == 45 /* '-' */) {
     input.advance()
-    if (isSpace(input.next))
+    if (isSep(input.next))
       input.acceptToken(stack.context.type == type_Seq && stack.context.depth == findColumn(input, input.pos - 1)
                         ? sequenceContinueMark : sequenceStartMark)
   } else if (input.next == 63 /* '?' */) {
     input.advance()
-    if (isSpace(input.next) || input.next < 0)
+    if (isSep(input.next))
       input.acceptToken(stack.context.type == type_Map && stack.context.depth == findColumn(input, input.pos - 1)
                         ? explicitMapContinueMark : explicitMapStartMark)
   } else {
@@ -101,6 +111,7 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
     // Scan over a potential key to see if it is followed by a colon.
     for (let props = false;;) {
       if (isNonBreakSpace(input.next)) {
+        if (input.pos == start) return
         input.advance()
       } else if (input.next == 33 /* '!' */) {
         readTag(input)
@@ -124,7 +135,7 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
     while (isNonBreakSpace(input.next)) input.advance()
     if (input.next == 58 /* ':' */) {
       let after = input.peek(1)
-      if (isSpace(after) || after < 0)
+      if (isSep(after))
         input.acceptTokenTo(stack.context.type == type_Map && stack.context.depth == findColumn(input, start)
                             ? mapContinueMark : mapStartMark, start)
     }
@@ -140,13 +151,13 @@ function hexChar(ch) {
   return ch >= 48 && ch <= 57 || ch >= 97 && ch <= 102 || ch >= 65 && ch <= 70
 }
 
-function readUriChar(input) {
+function readUriChar(input, quoted) {
   if (input.next == 37 /* '%' */) {
     input.advance()
     if (hexChar(input.next)) input.advance()
     if (hexChar(input.next)) input.advance()
     return true
-  } else if (uriChar(input.next)) {
+  } else if (uriChar(input.next) || quoted && input.next == 44 /* ',' */) {
     input.advance()
     return true
   }
@@ -158,19 +169,19 @@ function readTag(input) {
   if (input.next == 60 /* '<' */) {
     input.advance()
     for (;;) {
-      if (!readUriChar(input)) {
+      if (!readUriChar(input, true)) {
         if (input.next == 62 /* '>' */) input.advance()
         break
       }
     }
   } else {
-    while (readUriChar(input)) {}
+    while (readUriChar(input, false)) {}
   }
 }
 
 function readAnchor(input) {
   input.advance()
-  while (input.next >= 0 && !isSpace(input.next) && charTag(input.tag) != "f") input.advance()
+  while (!isSep(input.next) && charTag(input.tag) != "f") input.advance()
 }
   
 function readQuoted(input, scan) {
@@ -259,4 +270,21 @@ export const literals = new ExternalTokenizer((input, stack) => {
   } else if (readPlain(input, false, stack.context.type == type_Flow, stack.context.depth)) {
     input.acceptToken(Literal)
   }
+})
+
+export const blockLiteral = new ExternalTokenizer((input, stack) => {
+  let indent = stack.context.depth, upto = input.pos
+  scan: for (;;) {
+    let depth = 0, next = input.next
+    while (next == 32 /* ' ' */) next = input.peek(++depth)
+    if (depth <= indent && !isBreakSpace(next)) break
+    for (;;) {
+      if (input.next < 0) break scan
+      let isBreak = isBreakSpace(input.next)
+      input.advance()
+      if (isBreak) continue scan
+      upto = input.pos
+    }
+  }
+  input.acceptToken(BlockLiteralContent)
 })
