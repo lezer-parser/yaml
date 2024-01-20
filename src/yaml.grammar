@@ -1,4 +1,4 @@
-@top Stream { DocEnd? Document (DocEnd (!continue Document)? | directiveDocument)* }
+@top Stream { BOM? DocEnd? (Document (DocEnd (!continue Document)? | directiveDocument)*)? }
 
 @precedence { continue }
 
@@ -75,6 +75,8 @@ BlockMapping {
   BlockLiteral {
     BlockLiteralHeader whitespace? Comment? linebreak BlockLiteralContent
   }
+
+  Directive { DirectiveName whitespace? DirectiveContent? linebreak }
 }
 
 @skip { whitespace | linebreak | Comment }
@@ -112,8 +114,10 @@ BlockMapping {
 @tokens {
   whitespace { $[ \t]+ }
   linebreak { $[\n\r] }
-  Directive { "%" ![\n]* }
+  DirectiveName { "%" ![ \t\r\n]+ }
+  DirectiveContent { ![ \t\r\n] ![\n]* }
   Comment { "#" ![\n]* }
+  BOM { "\ufeff" }
 
   indentationIndicator { $[1-9] }
   chompingIndicator { $[+-] }
