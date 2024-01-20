@@ -1,8 +1,8 @@
 @top Stream { Document? (DocEnd Document?)* }
 
 Document {
-  Directive* DirectiveEnd? element+ |
-  Directive+ DirectiveEnd? element*
+  DirectiveEnd? element |
+  Directive+ DirectiveEnd? element?
 }
 
 value {
@@ -19,21 +19,34 @@ valueAtom {
 }
 
 element {
-  (Tag Anchor? | Anchor Tag?)? value | Alias
+  value |
+  Properties { (Tag Anchor? | Anchor Tag?) value? } |
+  Alias
 }
 
 elementAtom {
-  (Tag Anchor? | Anchor Tag?)? valueAtom | Alias
+  valueAtom |
+  Properties { (Tag Anchor? | Anchor Tag?) valueAtom? } |
+  Alias
 }
 
-flowPair[@name=Pair] {
-  elementAtom ":" elementAtom? |
-  flowMapMark elementAtom? ":" elementAtom?
+flowSeqElement[@name=Item] {
+  elementAtom |
+  FlowMapping {
+    Pair {
+      elementAtom? ":" elementAtom? |
+      flowMapMark (elementAtom? ":" elementAtom?)?
+    }
+  }
 }
-
-flowSeqElement { elementAtom | FlowMapping { flowPair } }
 
 FlowSequence { "[" (flowSeqElement ",")* flowSeqElement? "]" }
+
+flowPair[@name=Pair] {
+  elementAtom (":" elementAtom?)? |
+  ":" elementAtom? |
+  flowMapMark (elementAtom? ":" elementAtom?)?
+}
 
 FlowMapping { "{" (flowPair ",")* flowPair? "}" }
 
@@ -85,6 +98,7 @@ BlockMapping {
 
   "["[@export=BracketL] "]"
   "{"[@export=BraceL] "}"
+  ":"
 }
 
 @detectDelim

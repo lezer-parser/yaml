@@ -99,20 +99,23 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
   } else {
     let start = input.pos
     // Scan over a potential key to see if it is followed by a colon.
-    for (;;) {
+    for (let props = false;;) {
       if (isNonBreakSpace(input.next)) {
         input.advance()
       } else if (input.next == 33 /* '!' */) {
         readTag(input)
+        props = true
       } else if (input.next == 38 /* '&' */) {
         readAnchor(input)
+        props = true
       } else if (input.next == 42 /* '*' */) {
+        if (props) return
         readAnchor(input)
         break
       } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
         if (readQuoted(input, true)) break
         return
-      } else if (readPlain(input, true, false, 0)) {
+      } else if (readPlain(input, true, false, 0) || props) {
         break
       } else {
         return
@@ -129,7 +132,7 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
 }, {contextual: true})
 
 function uriChar(ch) {
-  return ch > 32 && ch < 127 && ch != 34 && ch != 37 && ch != 60 &&
+  return ch > 32 && ch < 127 && ch != 34 && ch != 37 && ch != 44 && ch != 60 &&
     ch != 62 && ch != 92 && ch != 94 && ch != 96 && ch != 123 && ch != 124 && ch != 125
 }
 
@@ -167,7 +170,7 @@ function readTag(input) {
 
 function readAnchor(input) {
   input.advance()
-  while (!isSpace(input.next) && safeCharTag(input.tag) != "f") input.advance()
+  while (input.next >= 0 && !isSpace(input.next) && charTag(input.tag) != "f") input.advance()
 }
   
 function readQuoted(input, scan) {
@@ -196,22 +199,22 @@ function readQuoted(input, scan) {
   return !lineBreak
 }
 
-// "Safe char" info for char codes 36 to 125. s: safe, u: unsafe, f: unsafe, disallowed in flow
-const safeTable = "suuussusfussssssssssssusssuuussssssssssssssssssssssssssfsfssussssssssssssssssssssssssssfuf"
+// "Safe char" info for char codes 33 to 125. s: safe, i: indicator, f: flow indicator
+const charTable = "iiisiiissisfissssssssssssisssiiissssssssssssssssssssssssssfsfssissssssssssssssssssssssssssfif"
 
-function safeCharTag(ch) {
-  if (ch < 36) return "u"
+function charTag(ch) {
+  if (ch < 33) return "u"
   if (ch > 125) return "s"
-  return safeTable[ch - 36]
+  return charTable[ch - 33]
 }
 
-function isSafe(ch, excludeFlow) {
-  let tag = safeCharTag(ch)
-  return excludeFlow ? tag == "s" : tag != "u"
+function isSafe(ch, inFlow) {
+  let tag = charTag(ch)
+  return tag != "u" && !(inFlow && tag == "f")
 }
 
 function readPlain(input, scan, inFlow, indent) {
-  if (isSafe(input.next, true) ||
+  if (charTag(input.next) == "s" ||
       (input.next == 63 /* '?' */ || input.next == 58 /* ':' */ || input.next == 45 /* '-' */) &&
       isSafe(input.peek(1), inFlow)) {
     input.advance()
@@ -231,11 +234,11 @@ function readPlain(input, scan, inFlow, indent) {
       next = input.peek(++off)
     }
     let safe = next >= 0 &&
-        (next == 58 /* ':' */ ? input.peek(off + 1) != 32 /* ' ' */ :
-         next == 32 /* ' ' */ ? input.peek(off + 1) != 35 /* '#' */ :
+        (next == 58 /* ':' */ ? isSafe(input.peek(off + 1), inFlow) :
+         next == 35 /* '#' */ ? input.peek(off - 1) != 32 /* ' ' */ :
          isSafe(next, inFlow))
     if (!safe || !inFlow && lineIndent <= indent) break
-    if (scan && safeCharTag(next) == "f") return false
+    if (scan && charTag(next) == "f") return false
     for (let i = off; i >= 0; i--) input.advance()
     if (scan && input.pos > start + 1024) return false
   }
