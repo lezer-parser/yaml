@@ -1,16 +1,16 @@
-@top Stream { BOM? DocEnd? (Document (DocEnd (!continue Document)? | directiveDocument)*)? }
-
 @precedence { continue }
+
+@top Stream { BOM? DocEnd? (Document (DocEnd (!continue Document)? | directiveDocument)*)? }
 
 Document {
   DirectiveEnd element? |
   DirectiveEnd? element |
-  Directive+ DirectiveEnd element?
+  (!continue Directive)+ (!continue DirectiveEnd element?)?
 }
 
 directiveDocument[@name=Document] {
   DirectiveEnd element? |
-  Directive+ DirectiveEnd element?
+  (!continue Directive)+ (!continue DirectiveEnd element?)?
 }
 
 value {
@@ -29,13 +29,15 @@ valueAtom {
 
 element {
   value |
-  Properties { (Tag Anchor? | Anchor Tag?) value? } |
+  Tagged { Tag (value | Anchored { Anchor value? })? } |
+  Anchored { Anchor (value | Tagged { Tag value? })? } |
   Alias
 }
 
 elementAtom {
   valueAtom |
-  Properties { (Tag Anchor? | Anchor Tag?) valueAtom? } |
+  Tagged { Tag (valueAtom | Anchored { Anchor valueAtom? })? } |
+  Anchored { Anchor (valueAtom | Tagged { Tag valueAtom? })? } |
   Alias
 }
 
@@ -62,21 +64,21 @@ FlowMapping { "{" (flowPair ",")* flowPair? "}" }
 BlockSequence {
   Item { sequenceStartMark element? }
   Item { sequenceContinueMark element? }*
-  blockEnd
+  (blockEnd | eof)
 }
 
 BlockMapping {
-  Pair { mapStartMark elementAtom ":" element? | explicitMapStartMark element? (":" element)? }
-  Pair { mapContinueMark elementAtom ":" element? | explicitMapContinueMark element? (":" element)? }*
-  blockEnd
+  Pair { mapStartMark elementAtom? ":" element? | explicitMapStartMark element? (":" element)? }
+  Pair { mapContinueMark elementAtom? ":" element? | explicitMapContinueMark element? (":" element)? }*
+  (blockEnd | eof)
 }
 
 @skip {} {
   BlockLiteral {
-    BlockLiteralHeader whitespace? Comment? linebreak BlockLiteralContent
+    BlockLiteralHeader whitespace? Comment? (eof | linebreak BlockLiteralContent)
   }
 
-  Directive { DirectiveName whitespace? DirectiveContent? linebreak }
+  Directive { DirectiveName whitespace? (DirectiveContent whitespace?)? Comment? (linebreak | eof) }
 }
 
 @skip { whitespace | linebreak | Comment }
@@ -85,6 +87,7 @@ BlockMapping {
 
 @external tokens newlines from "./tokens.js" {
   blockEnd,
+  eof,
   DirectiveEnd,
   DocEnd
 }
@@ -115,7 +118,7 @@ BlockMapping {
   whitespace { $[ \t]+ }
   linebreak { $[\n\r] }
   DirectiveName { "%" ![ \t\r\n]+ }
-  DirectiveContent { ![ \t\r\n] ![\n]* }
+  DirectiveContent { ![ \t\r\n#] (![\n ] | " " ![\n#])* }
   Comment { "#" ![\n]* }
   BOM { "\ufeff" }
 
@@ -128,7 +131,7 @@ BlockMapping {
 
   "["[@export=BracketL] "]"
   "{"[@export=BraceL] "}"
-  ":"
+  ":"[@export=Colon]
 }
 
 @detectDelim

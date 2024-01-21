@@ -1,12 +1,12 @@
 import {ExternalTokenizer, ContextTracker} from "@lezer/lr"
 import {
-  DirectiveEnd, DocEnd, blockEnd,
+  DirectiveEnd, DocEnd, blockEnd, eof,
   sequenceStartMark, sequenceContinueMark,
   explicitMapStartMark, explicitMapContinueMark,
   mapStartMark, mapContinueMark, flowMapMark,
   Literal, QuotedLiteral, Anchor, Alias, Tag,
   BlockLiteralContent,
-  BracketL, BraceL, FlowSequence, FlowMapping
+  BracketL, BraceL, Colon, FlowSequence, FlowMapping
 } from "./parser.terms.js"
 
 const type_Top = 0, type_Seq = 1, type_Map = 2, type_Flow = 3
@@ -19,7 +19,7 @@ class Context {
     this.hash = (parent ? parent.hash + parent.hash << 8 : 0) + depth + (depth << 4) + type
   }
 
-  static top = new Context(null, 0, type_Top)
+  static top = new Context(null, -1, type_Top)
 }
 
 function findColumn(input, pos) {
@@ -64,16 +64,20 @@ export const indentation = new ContextTracker({
   hash(context) { return context.hash }
 })
 
+function three(input, ch, off = 0) {
+  return input.peek(off) == ch && input.peek(off + 1) == ch && input.peek(off + 2) == ch && isSep(input.peek(off + 3))
+}
+
 export const newlines = new ExternalTokenizer((input, stack) => {
-  if (input.next == -1 && stack.canShift(blockEnd))
-    return input.acceptToken(blockEnd)
+  if (input.next == -1 && stack.canShift(eof))
+    return input.acceptToken(eof)
   let prev = input.peek(-1)
   if ((isBreakSpace(prev) || prev < 0) && stack.context.type != type_Flow) {
-    if (input.next == 45 /* '-' */ && input.peek(1) == 45 && input.peek(2) == 45 && isSep(input.peek(3))) {
+    if (three(input, 45 /* '-' */)) {
       if (stack.canShift(blockEnd)) input.acceptToken(blockEnd)
       else return input.acceptToken(DirectiveEnd, 3)
     }
-    if (input.next == 46 /* '.' */ && input.peek(1) == 46 && input.peek(2) == 46 && isSep(input.peek(3))) {
+    if (three(input, 46 /* '.' */)) {
       if (stack.canShift(blockEnd)) input.acceptToken(blockEnd)
       else return input.acceptToken(DocEnd, 3)
     }
@@ -109,31 +113,28 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
   } else {
     let start = input.pos
     // Scan over a potential key to see if it is followed by a colon.
-    for (let props = false;;) {
+    for (;;) {
       if (isNonBreakSpace(input.next)) {
         if (input.pos == start) return
         input.advance()
       } else if (input.next == 33 /* '!' */) {
         readTag(input)
-        props = true
       } else if (input.next == 38 /* '&' */) {
         readAnchor(input)
-        props = true
       } else if (input.next == 42 /* '*' */) {
-        if (props) return
         readAnchor(input)
         break
       } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
         if (readQuoted(input, true)) break
         return
-      } else if (readPlain(input, true, false, 0) || props) {
-        break
       } else {
-        return
+        readPlain(input, true, false, 0)
+        break
       }
     }
     while (isNonBreakSpace(input.next)) input.advance()
     if (input.next == 58 /* ':' */) {
+      if (input.pos == start && stack.canShift(Colon)) return
       let after = input.peek(1)
       if (isSep(after))
         input.acceptTokenTo(stack.context.type == type_Map && stack.context.depth == findColumn(input, start)
@@ -248,7 +249,9 @@ function readPlain(input, scan, inFlow, indent) {
         (next == 58 /* ':' */ ? isSafe(input.peek(off + 1), inFlow) :
          next == 35 /* '#' */ ? input.peek(off - 1) != 32 /* ' ' */ :
          isSafe(next, inFlow))
-    if (!safe || !inFlow && lineIndent <= indent) break
+    if (!safe || !inFlow && lineIndent <= indent ||
+        lineIndent == 0 && !inFlow && (three(input, 45, off) || three(input, 46, off)))
+      break
     if (scan && charTag(next) == "f") return false
     for (let i = off; i >= 0; i--) input.advance()
     if (scan && input.pos > start + 1024) return false
@@ -273,11 +276,15 @@ export const literals = new ExternalTokenizer((input, stack) => {
 })
 
 export const blockLiteral = new ExternalTokenizer((input, stack) => {
-  let indent = stack.context.depth, upto = input.pos
+  let indent = -1, upto = input.pos
   scan: for (;;) {
     let depth = 0, next = input.next
     while (next == 32 /* ' ' */) next = input.peek(++depth)
-    if (depth <= indent && !isBreakSpace(next)) break
+    if (!depth && (three(input, 45, depth) || three(input, 46, depth))) break
+    if (!isBreakSpace(next)) {
+      if (indent < 0) indent = Math.max(stack.context.depth + 1, depth)
+      if (depth < indent) break
+    }
     for (;;) {
       if (input.next < 0) break scan
       let isBreak = isBreakSpace(input.next)
