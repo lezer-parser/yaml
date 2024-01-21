@@ -123,7 +123,7 @@ BlockMapping {
   linebreak { $[\n\r] }
   DirectiveName { "%" ![ \t\r\n]+ }
   DirectiveContent { ![ \t\r\n#] (![\n ] | " " ![\n#])* }
-  Comment { "#" ![\n]* }
+  Comment[isolate] { "#" ![\n]* }
   BOM { "\ufeff" }
 
   indentationIndicator { $[1-9] }
