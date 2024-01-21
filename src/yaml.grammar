@@ -131,7 +131,9 @@ BlockMapping {
 
   "["[@export=BracketL] "]"
   "{"[@export=BraceL] "}"
-  ":"[@export=Colon]
+  ":"[@export=Colon] ","
 }
+
+@external propSource yamlHighlighting from "./highlight"
 
 @detectDelim

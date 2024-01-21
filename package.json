@@ -1,11 +1,11 @@
 {
   "name": "@lezer/yaml",
   "version": "1.0.0",
-  "description": "lezer-based YAML grammar",
+  "description": "Lezer-based YAML grammar",
   "main": "dist/index.cjs",
   "type": "module",
   "exports": {
-    "import": "./dist/index.es.js",
+    "import": "./dist/index.js",
     "require": "./dist/index.cjs"
   },
   "module": "dist/index.js",
@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@lezer/highlight": "^1.0.0",
-    "@lezer/lr": "^1.4.0"
+    "@lezer/lr": "^1.4.0",
+    "@lezer/common": "^1.2.0"
   },
   "repository": {
     "type": "git",
