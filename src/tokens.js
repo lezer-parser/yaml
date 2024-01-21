@@ -127,6 +127,9 @@ export const blockMark = new ExternalTokenizer((input, stack) => {
       } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
         if (readQuoted(input, true)) break
         return
+      } else if (input.next == 91 /* '[' */ || input.next == 123 /* '{' */) {
+        if (!scanBrackets(input)) return
+        break
       } else {
         readPlain(input, true, false, 0)
         break
@@ -209,6 +212,26 @@ function readQuoted(input, scan) {
     }
   }
   return !lineBreak
+}
+
+function scanBrackets(input) {
+  for (let stack = [];;) {
+    if (input.next == 91 /* '[' */ || input.next == 123 /* '{' */) {
+      stack.push(input.next)
+      input.advance()
+    } else if (input.next == 39 /* "'" */ || input.next == 34 /* '"' */) {
+      if (!readQuoted(input, true)) return false
+    } else if (input.next == 93 /* ']' */ || input.next == 125 /* '}' */) {
+      if (stack[stack.length - 1] != input.next - 2) return false
+      stack.pop()
+      input.advance()
+      if (!stack.length) return true
+    } else if (input.next < 0 || isBreakSpace(input.next)) {
+      return false
+    } else {
+      input.advance()
+    }
+  }
 }
 
 // "Safe char" info for char codes 33 to 125. s: safe, i: indicator, f: flow indicator
