@@ -1,0 +1,59 @@
+# Simple flow values
+
+{foo: [bar, baz],
+ bar: "one
+two three"}
+
+==>
+
+Stream(Document(FlowMapping(
+  Pair(Literal,FlowSequence(Item(Literal),Item(Literal))),
+  Pair(Literal,QuotedLiteral))))
+
+# Pairs
+
+[one: two, ? : four, x: ]
+
+==>
+
+Stream(Document(FlowSequence(
+  Item(FlowMapping(Pair(Literal,Literal))),
+  Item(FlowMapping(Pair(Literal))),
+  Item(FlowMapping(Pair(Literal))))))
+
+# Simple sequence
+
+- one
+- two
+- three
+
+==>
+
+Stream(Document(BlockSequence(Item(Literal),Item(Literal),Item(Literal))))
+
+# Nested sequence
+
+- - one
+  - two
+- three
+
+==>
+
+Stream(Document(BlockSequence(Item(BlockSequence(Item(Literal),Item(Literal))),Item(Literal))))
+
+# Simple Mapping
+
+One: A
+Two: B
+
+==>
+
+Stream(Document(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))))
+
+# Semicolon in atom
+
+foo:bar
+
+==>
+
+Stream(Document(Literal))

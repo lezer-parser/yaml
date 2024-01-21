@@ -215,7 +215,7 @@ function readQuoted(input, scan) {
 }
 
 function scanBrackets(input) {
-  for (let stack = [];;) {
+  for (let stack = [], end = input.pos + 1024;;) {
     if (input.next == 91 /* '[' */ || input.next == 123 /* '{' */) {
       stack.push(input.next)
       input.advance()
@@ -226,7 +226,7 @@ function scanBrackets(input) {
       stack.pop()
       input.advance()
       if (!stack.length) return true
-    } else if (input.next < 0 || isBreakSpace(input.next)) {
+    } else if (input.next < 0 || input.pos > end || isBreakSpace(input.next)) {
       return false
     } else {
       input.advance()
