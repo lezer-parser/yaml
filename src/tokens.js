@@ -316,5 +316,5 @@ export const blockLiteral = new ExternalTokenizer((input, stack) => {
       upto = input.pos
     }
   }
-  input.acceptToken(BlockLiteralContent)
+  input.acceptTokenTo(BlockLiteralContent, upto)
 })

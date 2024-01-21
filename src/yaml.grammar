@@ -45,18 +45,20 @@ flowSeqElement[@name=Item] {
   elementAtom |
   FlowMapping {
     Pair {
-      elementAtom? ":" elementAtom? |
-      flowMapMark (elementAtom? ":" elementAtom?)?
+      Key? ":" elementAtom? |
+      flowMapMark (Key? ":" elementAtom?)?
     }
   }
 }
 
 FlowSequence { "[" (flowSeqElement ",")* flowSeqElement? "]" }
 
+Key { elementAtom }
+
 flowPair[@name=Pair] {
-  elementAtom (":" elementAtom?)? |
-  ":" elementAtom? |
-  flowMapMark (elementAtom? ":" elementAtom?)?
+  Key (":" elementAtom?)? |
+  ":" Key? |
+  flowMapMark (Key? ":" elementAtom?)?
 }
 
 FlowMapping { "{" (flowPair ",")* flowPair? "}" }
@@ -67,9 +69,11 @@ BlockSequence {
   (blockEnd | eof)
 }
 
+explicitKey[@name=Key] { element }
+
 BlockMapping {
-  Pair { mapStartMark elementAtom? ":" element? | explicitMapStartMark element? (":" element)? }
-  Pair { mapContinueMark elementAtom? ":" element? | explicitMapContinueMark element? (":" element)? }*
+  Pair { mapStartMark Key? ":" element? | explicitMapStartMark explicitKey? (":" element)? }
+  Pair { mapContinueMark Key? ":" element? | explicitMapContinueMark explicitKey? (":" element)? }*
   (blockEnd | eof)
 }
 

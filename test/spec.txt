@@ -17,9 +17,9 @@ rbi: 147   # Runs Batted In
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),Comment,
-  Pair(Literal,Literal),Comment,
-  Pair(Literal,Literal))),Comment)
+  Pair(Key(Literal),Literal),Comment,
+  Pair(Key(Literal),Literal),Comment,
+  Pair(Key(Literal),Literal))),Comment)
 
 # Example 2.3 Mapping Scalars to Sequences (ball clubs in each league)
 
@@ -35,11 +35,11 @@ national:
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(Literal),
     Item(Literal))),
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(Literal),
     Item(Literal))))))
@@ -59,13 +59,13 @@ Stream(Document(BlockMapping(
 
 Stream(Document(BlockSequence(
   Item(BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,Literal))),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal))),
   Item(BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,Literal))))))
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal))))))
 
 # Example 2.5 Sequence of Sequences
 
@@ -91,12 +91,12 @@ Sammy Sosa: {
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,FlowMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal))),
-  Pair(Literal,FlowMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal))))))
+  Pair(Key(Literal),FlowMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal))),
+  Pair(Key(Literal),FlowMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal))))))
 
 # Example 2.7 Two Documents in a Stream (each with a leading comment)
 
@@ -135,9 +135,9 @@ action: grand slam
 ==>
 
 Stream(
-  Document(DirectiveEnd,BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal),Pair(Literal,Literal))),
+  Document(DirectiveEnd,BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
   DocEnd,
-  Document(DirectiveEnd,BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal),Pair(Literal,Literal))),
+  Document(DirectiveEnd,BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
   DocEnd)
 
 # Example 2.9 Single Document with Two Comments
@@ -156,11 +156,11 @@ rbi:
 Stream(Document(
   DirectiveEnd,
   BlockMapping(
-    Pair(Literal,Comment,BlockSequence(
+    Pair(Key(Literal),Comment,BlockSequence(
       Item(Literal),
       Item(Literal))),
   Comment,
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(Literal))))))
 
@@ -180,11 +180,11 @@ rbi:
 Stream(Document(
   DirectiveEnd,
   BlockMapping(
-    Pair(Literal,BlockSequence(
+    Pair(Key(Literal),BlockSequence(
       Item(Literal),
       Comment,
       Item(Anchored(Anchor,Literal)))),
-    Pair(Literal,BlockSequence(
+    Pair(Key(Literal),BlockSequence(
       Item(Alias),Comment,
       Item(Literal))))))
 
@@ -202,8 +202,8 @@ Stream(Document(
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(BlockSequence(Item(Literal),Item(Literal)),BlockSequence(Item(Literal))),
-  Pair(FlowSequence(Item(Literal),Item(Literal)),FlowSequence(Item(Literal),Item(Literal),Item(Literal))))))
+  Pair(Key(BlockSequence(Item(Literal),Item(Literal))),BlockSequence(Item(Literal))),
+  Pair(Key(FlowSequence(Item(Literal),Item(Literal))),FlowSequence(Item(Literal),Item(Literal),Item(Literal))))))
 
 # Example 2.12 Compact Nested Mapping
 
@@ -219,9 +219,9 @@ Stream(Document(BlockMapping(
 ==>
 
 Stream(Document(DirectiveEnd,Comment,BlockSequence(
-  Item(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))),
-  Item(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))),
-  Item(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))))))
+  Item(BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
+  Item(BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
+  Item(BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))))))
 
 # Example 2.13 In literals, newlines are preserved
 
@@ -273,9 +273,9 @@ stats: |
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 2.17 Quoted Scalars
 
@@ -290,12 +290,12 @@ tie-fighter: '|\-*-/|'
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,QuotedLiteral))))
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),QuotedLiteral))))
 
 # Example 2.18 Multi-line Flow Scalars
 
@@ -308,7 +308,7 @@ quoted: "So does this
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,Literal),Pair(Literal,QuotedLiteral))))
+Stream(Document(BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),QuotedLiteral))))
 
 # Example 2.19 Integers
 
@@ -320,10 +320,10 @@ hexadecimal: 0xC
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal))))
 
 # Example 2.20 Floating Point
 
@@ -336,11 +336,11 @@ not a number: .nan
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal))))
 
 # Example 2.21 Miscellaneous
 
@@ -351,9 +351,9 @@ string: '012345'
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal))),
-  Pair(Literal,QuotedLiteral))))
+  Pair(Key(Literal)),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal))),
+  Pair(Key(Literal),QuotedLiteral))))
 
 # Example 2.22 Timestamps
 
@@ -365,10 +365,10 @@ date: 2002-12-14
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal))))
 
 # Example 2.23 Various Explicit Tags
 
@@ -389,9 +389,9 @@ application specific tag: !something |
 ==>
 
 Stream(Document(DirectiveEnd,BlockMapping(
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))),
-  Pair(Literal,Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))))))
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))),
+  Pair(Key(Literal),Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))))))
 
 # Example 2.24 Global Tags
 
@@ -417,15 +417,15 @@ Stream(Document(
   DirectiveEnd,
   Tagged(Tag,Comment,Comment,BlockSequence(
     Item(Tagged(Tag,BlockMapping(
-      Pair(Literal,Anchored(Anchor,FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal)))),
-      Pair(Literal,Literal)))),
+      Pair(Key(Literal),Anchored(Anchor,FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal)))),
+      Pair(Key(Literal),Literal)))),
     Item(Tagged(Tag,BlockMapping(
-      Pair(Literal,Alias),
-      Pair(Literal,FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal)))))),
+      Pair(Key(Literal),Alias),
+      Pair(Key(Literal),FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal)))))),
     Item(Tagged(Tag,BlockMapping(
-      Pair(Literal,Alias),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal))))))))
+      Pair(Key(Literal),Alias),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal))))))))
 
 # Example 2.25 Unordered Sets
 
@@ -446,9 +446,9 @@ Stream(
   Document(
     DirectiveEnd,
     Tagged(Tag,BlockMapping(
-      Pair(Literal),
-      Pair(Literal),
-      Pair(Literal)))))
+      Pair(Key(Literal)),
+      Pair(Key(Literal)),
+      Pair(Key(Literal))))))
 
 # Example 2.26 Ordered Mappings
 
@@ -467,9 +467,9 @@ Stream(
   Comment,
   Comment,
   Document(DirectiveEnd,Tagged(Tag,BlockSequence(
-    Item(BlockMapping(Pair(Literal,Literal))),
-    Item(BlockMapping(Pair(Literal,Literal))),
-    Item(BlockMapping(Pair(Literal,Literal)))))))
+    Item(BlockMapping(Pair(Key(Literal),Literal))),
+    Item(BlockMapping(Pair(Key(Literal),Literal))),
+    Item(BlockMapping(Pair(Key(Literal),Literal)))))))
 
 # Example 2.27 Invoice
 
@@ -506,31 +506,31 @@ comments:
 ==>
 
 Stream(Document(DirectiveEnd,Tagged(Tag,BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Anchored(Anchor,BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,BlockMapping(
-      Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal)))))),
-  Pair(Literal,Alias),
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Anchored(Anchor,BlockMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),BlockMapping(
+      Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal)))))),
+  Pair(Key(Literal),Alias),
+  Pair(Key(Literal),BlockSequence(
     Item(BlockMapping(
-      Pair(Literal,Literal),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal))),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal))),
     Item(BlockMapping(
-      Pair(Literal,Literal),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal),
-      Pair(Literal,Literal))))),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal),
-  Pair(Literal,Literal)))))
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal),
+      Pair(Key(Literal),Literal))))),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),Literal)))))
 
 # Example 2.28 Log File
 
@@ -564,21 +564,21 @@ Stack:
 ==>
 
 Stream(
-  Document(DirectiveEnd,BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal),Pair(Literal,Literal))),
-  Document(DirectiveEnd,BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal),Pair(Literal,Literal))),
+  Document(DirectiveEnd,BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
+  Document(DirectiveEnd,BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
   Document(DirectiveEnd,BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,BlockSequence(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),BlockSequence(
       Item(BlockMapping(
-        Pair(Literal,Literal),
-        Pair(Literal,Literal),
-        Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))),
+        Pair(Key(Literal),Literal),
+        Pair(Key(Literal),Literal),
+        Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))),
       Item(BlockMapping(
-        Pair(Literal,Literal),
-        Pair(Literal,Literal),
-        Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))))))
+        Pair(Key(Literal),Literal),
+        Pair(Key(Literal),Literal),
+        Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))))))
 
 # Example 5.1 Byte Order Mark
 
@@ -601,12 +601,12 @@ mapping:
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(Literal))),
-  Pair(Literal,BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal))))))
+  Pair(Key(Literal),BlockMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal))))))
 
 # Example 5.4 Flow Collection Indicators
 
@@ -616,8 +616,8 @@ mapping: { sky: blue, sea: green }
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal))),
-  Pair(Literal,FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal))))))
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))))))
 
 # Example 5.5 Comment Indicator
 
@@ -635,8 +635,8 @@ alias: *anchor
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,Anchored(Anchor,Literal))),
-  Pair(Literal,Alias))))
+  Pair(Key(Literal),Tagged(Tag,Anchored(Anchor,Literal))),
+  Pair(Key(Literal),Alias))))
 
 # Example 5.7 Block Scalar Indicators
 
@@ -650,8 +650,8 @@ folded: >
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 5.8 Quoted Scalar Indicators
 
@@ -660,7 +660,7 @@ double: "text"
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,QuotedLiteral),Pair(Literal,QuotedLiteral))))
+Stream(Document(BlockMapping(Pair(Key(Literal),QuotedLiteral),Pair(Key(Literal),QuotedLiteral))))
 
 # Example 5.9 Directive Indicator
 
@@ -683,8 +683,8 @@ block:	|
 ==>
 
 Stream(Comment,Document(BlockMapping(
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 5.13 Escaped Characters
 
@@ -720,9 +720,9 @@ Not indented:
 ==>
 
 Stream(Comment,Comment,Document(BlockMapping(
-  Pair(Literal,BlockMapping(
-    Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-    Pair(Literal,FlowSequence(Comment,
+  Pair(Key(Literal),BlockMapping(
+    Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+    Pair(Key(Literal),FlowSequence(Comment,
       Item(Literal),Comment,
       Item(Literal),Comment,
       Item(Literal),Comment)))))),Comment)
@@ -737,7 +737,7 @@ Stream(Comment,Comment,Document(BlockMapping(
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(BlockSequence(Item(Literal),Item(Literal))))))))
 
@@ -750,7 +750,7 @@ Stream(Document(BlockMapping(
 ==>
 
 Stream(Document(BlockSequence(
-  Item(BlockMapping(Pair(Literal,Literal))),
+  Item(BlockMapping(Pair(Key(Literal),Literal))),
   Item(BlockSequence(Item(Literal),Item(Literal))))))
 
 # Example 6.4 Line Prefixes
@@ -766,9 +766,9 @@ block: |
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 6.5 Empty Lines
 
@@ -783,8 +783,8 @@ Chomping: |
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 6.6 Line Folding
 
@@ -833,7 +833,7 @@ key:    # Comment
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,Comment,Literal))))
+Stream(Document(BlockMapping(Pair(Key(Literal),Comment,Literal))))
 
 # Example 6.10 Comment Lines
 
@@ -852,7 +852,7 @@ key:    # Comment
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,Comment,Comment,Literal))))
+Stream(Document(BlockMapping(Pair(Key(Literal),Comment,Comment,Literal))))
 
 # Example 6.12 Separation Spaces
 
@@ -867,11 +867,11 @@ Stream(Document(BlockMapping(Pair(Literal,Comment,Comment,Literal))))
 
 Stream(Document(BlockMapping(
   Pair(
-    FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal)),
+    Key(FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
     Comment,
     BlockMapping(
-      Pair(Literal,Comment,Literal),
-      Pair(Literal,Comment,Literal))))))
+      Pair(Key(Literal),Comment,Literal),
+      Pair(Key(Literal),Comment,Literal))))))
 
 # Example 6.13 Reserved Directives
 
@@ -1006,8 +1006,8 @@ Stream(Document(
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Tagged(Tag,Anchored(Anchor,QuotedLiteral)),Tagged(Tag,Literal)),
-  Pair(Anchored(Anchor,Literal),Alias))))
+  Pair(Key(Tagged(Tag,Anchored(Anchor,QuotedLiteral))),Tagged(Tag,Literal)),
+  Pair(Key(Anchored(Anchor,Literal)),Alias))))
 
 # Example 6.24 Verbatim Tags
 
@@ -1016,7 +1016,7 @@ Stream(Document(BlockMapping(
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Tagged(Tag,Literal),Tagged(Tag,Literal)))))
+Stream(Document(BlockMapping(Pair(Key(Tagged(Tag,Literal)),Tagged(Tag,Literal)))))
 
 # Example 6.26 Tag Shorthands
 
@@ -1057,7 +1057,7 @@ Second occurrence: *anchor
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,Anchored(Anchor,Literal)),Pair(Literal,Alias))))
+Stream(Document(BlockMapping(Pair(Key(Literal),Anchored(Anchor,Literal)),Pair(Key(Literal),Alias))))
 
 # Example 7.1 Alias Nodes
 
@@ -1069,10 +1069,10 @@ Reuse anchor: *anchor
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Anchored(Anchor,Literal)),
-  Pair(Literal,Alias),
-  Pair(Literal,Anchored(Anchor,Literal)),
-  Pair(Literal,Alias))))
+  Pair(Key(Literal),Anchored(Anchor,Literal)),
+  Pair(Key(Literal),Alias),
+  Pair(Key(Literal),Anchored(Anchor,Literal)),
+  Pair(Key(Literal),Alias))))
 
 # Example 7.2 Empty Content
 
@@ -1083,7 +1083,7 @@ Stream(Document(BlockMapping(
 
 ==>
 
-Stream(Document(FlowMapping(Pair(Literal,Tagged(Tag)),Pair(Tagged(Tag),Literal))))
+Stream(Document(FlowMapping(Pair(Key(Literal),Tagged(Tag)),Pair(Key(Tagged(Tag)),Literal))))
 
 # Example 7.3 Completely Empty Flow Nodes
 
@@ -1094,7 +1094,7 @@ Stream(Document(FlowMapping(Pair(Literal,Tagged(Tag)),Pair(Tagged(Tag),Literal))
 
 ==>
 
-Stream(Document(FlowMapping(Pair(Literal),Pair(Literal))))
+Stream(Document(FlowMapping(Pair(Key(Literal)),Pair(Key(Literal)))))
 
 # Example 7.4 Double Quoted Implicit Keys
 
@@ -1104,8 +1104,8 @@ Stream(Document(FlowMapping(Pair(Literal),Pair(Literal))))
 
 ==>
 
-Stream(Document(BlockMapping(Pair(QuotedLiteral,FlowSequence(
-  Item(FlowMapping(Pair(QuotedLiteral,Literal))))))))
+Stream(Document(BlockMapping(Pair(Key(QuotedLiteral),FlowSequence(
+  Item(FlowMapping(Pair(Key(QuotedLiteral),Literal))))))))
 
 # Example 7.5 Double Quoted Line Breaks
 
@@ -1146,7 +1146,7 @@ Stream(Document(QuotedLiteral))
 
 ==>
 
-Stream(Document(BlockMapping(Pair(QuotedLiteral,FlowSequence(Item(FlowMapping(Pair(QuotedLiteral,Literal))))))))
+Stream(Document(BlockMapping(Pair(Key(QuotedLiteral),FlowSequence(Item(FlowMapping(Pair(Key(QuotedLiteral),Literal))))))))
 
 # Example 7.9 Single Quoted Lines
 
@@ -1236,7 +1236,7 @@ Stream(Document(FlowSequence(
   Item(QuotedLiteral),
   Item(Literal),
   Item(FlowSequence(Item(Literal))),
-  Item(FlowMapping(Pair(Literal,Literal))))))
+  Item(FlowMapping(Pair(Key(Literal),Literal))))))
 
 # Example 7.15 Flow Mappings
 
@@ -1246,8 +1246,8 @@ Stream(Document(FlowSequence(
 ==>
 
 Stream(Document(BlockSequence(
-  Item(FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal))),
-  Item(FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal))))))
+  Item(FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))),
+  Item(FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))))))
 
 # Example 7.16 Flow Mapping Entries
 
@@ -1259,7 +1259,7 @@ implicit: entry,
 
 ==>
 
-Stream(Document(FlowMapping(Pair(Literal,Literal),Pair(Literal,Literal),Pair)))
+Stream(Document(FlowMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal),Pair)))
 
 # Example 7.17 Flow Mapping Separate Values
 
@@ -1273,10 +1273,10 @@ omitted value:,
 ==>
 
 Stream(Document(FlowMapping(
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal),
-  Pair(Literal),
-  Pair(Literal))))
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal)),
+  Pair(Key(Literal)),
+  Pair(Key(Literal)))))
 
 # Example 7.18 Flow Mapping Adjacent Values
 
@@ -1289,9 +1289,9 @@ Stream(Document(FlowMapping(
 ==>
 
 Stream(Document(FlowMapping(
-  Pair(QuotedLiteral,Literal),
-  Pair(QuotedLiteral,Literal),
-  Pair(QuotedLiteral))))
+  Pair(Key(QuotedLiteral),Literal),
+  Pair(Key(QuotedLiteral),Literal),
+  Pair(Key(QuotedLiteral)))))
 
 # Example 7.19 Single Pair Flow Mappings
 
@@ -1301,7 +1301,7 @@ foo: bar
 
 ==>
 
-Stream(Document(FlowSequence(Item(FlowMapping(Pair(Literal,Literal))))))
+Stream(Document(FlowSequence(Item(FlowMapping(Pair(Key(Literal),Literal))))))
 
 # Example 7.20 Single Pair Explicit Entry
 
@@ -1312,7 +1312,7 @@ Stream(Document(FlowSequence(Item(FlowMapping(Pair(Literal,Literal))))))
 
 ==>
 
-Stream(Document(FlowSequence(Item(FlowMapping(Pair(Literal,Literal))))))
+Stream(Document(FlowSequence(Item(FlowMapping(Pair(Key(Literal),Literal))))))
 
 # Example 7.21 Single Pair Implicit Entries
 
@@ -1323,9 +1323,9 @@ Stream(Document(FlowSequence(Item(FlowMapping(Pair(Literal,Literal))))))
 ==>
 
 Stream(Document(BlockSequence(
-  Item(FlowSequence(Item(FlowMapping(Pair(Literal,Literal))))),
+  Item(FlowSequence(Item(FlowMapping(Pair(Key(Literal),Literal))))),
   Item(FlowSequence(Item(FlowMapping(Pair(Literal))))),
-  Item(FlowSequence(Item(FlowMapping(Pair(FlowMapping(Pair(Literal,Literal)),Literal))))))))
+  Item(FlowSequence(Item(FlowMapping(Pair(Key(FlowMapping(Pair(Key(Literal),Literal))),Literal))))))))
 
 # Example 7.23 Flow Content
 
@@ -1339,7 +1339,7 @@ Stream(Document(BlockSequence(
 
 Stream(Document(BlockSequence(
   Item(FlowSequence(Item(Literal),Item(Literal))),
-  Item(FlowMapping(Pair(Literal,Literal))),
+  Item(FlowMapping(Pair(Key(Literal),Literal))),
   Item(QuotedLiteral),
   Item(QuotedLiteral),
   Item(Literal))))
@@ -1415,9 +1415,9 @@ keep: |+
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))
 
 # Example 8.5 Chomping Trailing Lines
 
@@ -1444,11 +1444,11 @@ keep: |+
 ==>
 
 Stream(Comment,Comment,Document(BlockMapping(
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
   Comment,Comment,
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
   Comment,Comment,
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))),
 Comment,Comment)
 
 # Example 8.6 Empty Scalar Chomping
@@ -1464,10 +1464,10 @@ a: b
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,Literal))))
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),Literal))))
 
 # Example 8.7 Literal Scalar
 
@@ -1608,9 +1608,9 @@ block sequence:
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockSequence(
+  Pair(Key(Literal),BlockSequence(
     Item(Literal),
-    Item(BlockMapping(Pair(Literal,Literal))))))))
+    Item(BlockMapping(Pair(Key(Literal),Literal))))))))
 
 # Example 8.15 Block Sequence Entry Types
 
@@ -1627,7 +1627,7 @@ Stream(Document(BlockSequence(
   Item,Comment,
   Item(BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
   Item(BlockSequence(Item(Literal),Comment,Item(Literal))),Comment,
-  Item(BlockMapping(Pair(Literal,Literal))))),Comment)
+  Item(BlockMapping(Pair(Key(Literal),Literal))))),Comment)
 
 # Example 8.16 Block Mappings
 
@@ -1636,7 +1636,7 @@ block mapping:
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,BlockMapping(Pair(Literal,Literal))))))
+Stream(Document(BlockMapping(Pair(Key(Literal),BlockMapping(Pair(Key(Literal),Literal))))))
 
 # Example 8.17 Explicit Block Mapping Entries
 
@@ -1649,8 +1649,8 @@ Stream(Document(BlockMapping(Pair(Literal,BlockMapping(Pair(Literal,Literal)))))
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal),Comment,
-  Pair(BlockLiteral(BlockLiteralHeader,BlockLiteralContent),BlockSequence(
+  Pair(Key(Literal)),Comment,
+  Pair(Key(BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),BlockSequence(
     Item(Literal),Comment,
     Item(Literal))))),Comment)
 
@@ -1664,9 +1664,9 @@ plain key: in-line value
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
+  Pair(Key(Literal),Literal),
   Pair,Comment,
-  Pair(QuotedLiteral,BlockSequence(Item(Literal))))))
+  Pair(Key(QuotedLiteral),BlockSequence(Item(Literal))))))
 
 # Example 8.19 Compact Block Mappings
 
@@ -1677,9 +1677,9 @@ Stream(Document(BlockMapping(
 ==>
 
 Stream(Document(BlockSequence(
-  Item(BlockMapping(Pair(Literal,Literal))),
+  Item(BlockMapping(Pair(Key(Literal),Literal))),
   Item(BlockMapping(
-    Pair(BlockMapping(Pair(Literal,Literal)),BlockMapping(Pair(Literal,Literal))))))))
+    Pair(Key(BlockMapping(Pair(Key(Literal),Literal))),BlockMapping(Pair(Key(Literal),Literal))))))))
 
 # Example 8.20 Block Node Types
 
@@ -1695,7 +1695,7 @@ Stream(Document(BlockSequence(
 Stream(Document(BlockSequence(
   Item(QuotedLiteral),
   Item(BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Item(Tagged(Tag,Comment,BlockMapping(Pair(Literal,Literal)))))))
+  Item(Tagged(Tag,Comment,BlockMapping(Pair(Key(Literal),Literal)))))))
 
 # Example 8.21 Block Scalar Nodes
 
@@ -1709,8 +1709,8 @@ folded:
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Pair(Literal,Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))))))
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+  Pair(Key(Literal),Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))))))
 
 # Example 8.22 Block Collection Nodes
 
@@ -1724,11 +1724,11 @@ mapping: !!map
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,BlockSequence(
+  Pair(Key(Literal),Tagged(Tag,BlockSequence(
     Item(Literal),
     Item(Tagged(Tag,BlockSequence(Item(Literal))))))),
-  Pair(Literal,Tagged(Tag,BlockMapping(
-    Pair(Literal,Literal)))))))
+  Pair(Key(Literal),Tagged(Tag,BlockMapping(
+    Pair(Key(Literal),Literal)))))))
 
 # Example 9.1 Document Prefix
 
@@ -1787,7 +1787,7 @@ Stream(
 Stream(
   Document(
     DirectiveEnd,
-    FlowMapping(Pair(Literal,Literal))),
+    FlowMapping(Pair(Key(Literal),Literal))),
   DocEnd,
   Document(DirectiveEnd),
   Comment,
@@ -1838,7 +1838,7 @@ Stream(
   Document(
     Directive(DirectiveName,DirectiveContent),
     DirectiveEnd,
-    BlockMapping(Pair(Literal,Literal))))
+    BlockMapping(Pair(Key(Literal),Literal))))
 
 # Example 10.1 !!map Examples
 
@@ -1852,14 +1852,14 @@ Flow style: !!map { Clark: Evans, Ingy: döt Net, Oren: Ben-Kiki }
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,BlockMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,Literal)))),
-  Pair(Literal,Tagged(Tag,FlowMapping(
-    Pair(Literal,Literal),
-    Pair(Literal,Literal),
-    Pair(Literal,Literal)))))))
+  Pair(Key(Literal),Tagged(Tag,BlockMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal)))),
+  Pair(Key(Literal),Tagged(Tag,FlowMapping(
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal),
+    Pair(Key(Literal),Literal)))))))
 
 # Example 10.2 !!seq Examples
 
@@ -1873,11 +1873,11 @@ Flow style: !!seq [ Clark Evans, Ingy döt Net, Oren Ben-Kiki ]
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,BlockSequence(
+  Pair(Key(Literal),Tagged(Tag,BlockSequence(
     Item(Literal),
     Item(Literal),
     Item(Literal)))),
-  Pair(Literal,Tagged(Tag,FlowSequence(Item(Literal),Item(Literal),Item(Literal)))))))
+  Pair(Key(Literal),Tagged(Tag,FlowSequence(Item(Literal),Item(Literal),Item(Literal)))))))
 
 # Example 10.3 !!str Examples
 
@@ -1889,8 +1889,8 @@ Flow style: !!str "String: just a theory."
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))),
-  Pair(Literal,Tagged(Tag,QuotedLiteral)))))
+  Pair(Key(Literal),Tagged(Tag,BlockLiteral(BlockLiteralHeader,BlockLiteralContent))),
+  Pair(Key(Literal),Tagged(Tag,QuotedLiteral)))))
 
 # Example 10.4 !!null Examples
 
@@ -1900,8 +1900,8 @@ key with null value: !!null null
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Tagged(Tag,Literal),Literal),
-  Pair(Literal,Tagged(Tag,Literal)))))
+  Pair(Key(Tagged(Tag,Literal)),Literal),
+  Pair(Key(Literal),Tagged(Tag,Literal)))))
 
 # Example 10.5 !!bool Examples
 
@@ -1911,8 +1911,8 @@ Pluto is a planet: !!bool false
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)))))
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)))))
 
 # Example 10.6 !!int Examples
 
@@ -1923,9 +1923,9 @@ positive: !!int 34
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)))))
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)))))
 
 # Example 10.7 !!float Examples
 
@@ -1938,11 +1938,11 @@ not a number: !!float .nan
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)),
-  Pair(Literal,Tagged(Tag,Literal)))))
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)),
+  Pair(Key(Literal),Tagged(Tag,Literal)))))
 
 # Example 10.8 JSON Tag Resolution
 
@@ -1956,11 +1956,11 @@ Invalid: [ True, Null,
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal),Item(Literal))))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal),Item(Literal))))))
 
 # Example 10.9 Core Tag Resolution
 
@@ -1977,10 +1977,10 @@ Also floats: [
 ==>
 
 Stream(Document(BlockMapping(
-  Pair(Literal,Literal),
-  Pair(Literal),Comment,
-  Pair(Literal,QuotedLiteral),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))))))
+  Pair(Key(Literal),Literal),
+  Pair(Key(Literal)),Comment,
+  Pair(Key(Literal),QuotedLiteral),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal),Item(Literal))),
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal),Item(Literal),Item(Literal))))))

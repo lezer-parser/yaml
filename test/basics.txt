@@ -7,8 +7,8 @@ two three"}
 ==>
 
 Stream(Document(FlowMapping(
-  Pair(Literal,FlowSequence(Item(Literal),Item(Literal))),
-  Pair(Literal,QuotedLiteral))))
+  Pair(Key(Literal),FlowSequence(Item(Literal),Item(Literal))),
+  Pair(Key(Literal),QuotedLiteral))))
 
 # Pairs
 
@@ -17,9 +17,9 @@ Stream(Document(FlowMapping(
 ==>
 
 Stream(Document(FlowSequence(
-  Item(FlowMapping(Pair(Literal,Literal))),
+  Item(FlowMapping(Pair(Key(Literal),Literal))),
   Item(FlowMapping(Pair(Literal))),
-  Item(FlowMapping(Pair(Literal))))))
+  Item(FlowMapping(Pair(Key(Literal)))))))
 
 # Simple sequence
 
@@ -48,7 +48,7 @@ Two: B
 
 ==>
 
-Stream(Document(BlockMapping(Pair(Literal,Literal),Pair(Literal,Literal))))
+Stream(Document(BlockMapping(Pair(Key(Literal),Literal),Pair(Key(Literal),Literal))))
 
 # Semicolon in atom
 
