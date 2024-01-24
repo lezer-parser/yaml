@@ -87,7 +87,7 @@ export const newlines = new ExternalTokenizer((input, stack) => {
          depth == stack.context.depth && stack.context.type == type_Seq &&
          (input.next != 45 /* '-' */ || !isSep(input.peek(1)))) &&
         // Not blank
-        input.next != -1 && input.next != 10 && input.next != 13 && input.next != 35 /* '#' */)
+        input.next != -1 && !isBreakSpace(input.next) && input.next != 35 /* '#' */)
       input.acceptToken(blockEnd, -depth)
   }
 }, {contextual: true})
