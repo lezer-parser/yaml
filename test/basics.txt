@@ -57,3 +57,14 @@ foo:bar
 ==>
 
 Stream(Document(Literal))
+
+# Explicitly Indented Block Literal
+
+foo: |2
+      one
+  two
+
+==>
+
+Stream(Document(BlockMapping(
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))))

@@ -5,11 +5,16 @@ import {
   explicitMapStartMark, explicitMapContinueMark,
   mapStartMark, mapContinueMark, flowMapMark,
   Literal, QuotedLiteral, Anchor, Alias, Tag,
-  BlockLiteralContent,
+  BlockLiteralHeader, BlockLiteralContent,
   BracketL, BraceL, Colon, FlowSequence, FlowMapping
 } from "./parser.terms.js"
 
-const type_Top = 0, type_Seq = 1, type_Map = 2, type_Flow = 3
+const
+  type_Top = 0, // Top document level
+  type_Seq = 1, // Block sequence
+  type_Map = 2, // Block mapping
+  type_Flow = 3, // Inside flow content
+  type_Lit = 4 // Block literal with explicit indentation
 
 class Context {
   constructor(parent, depth, type) {
@@ -59,6 +64,12 @@ export const indentation = new ContextTracker({
       return context.parent
     if (term == BracketL || term == BraceL)
       return new Context(context, 0, type_Flow)
+    if (term == BlockLiteralContent && context.type == type_Lit)
+      return context.parent
+    if (term == BlockLiteralHeader) {
+      let indent = /[1-9]/.exec(input.read(input.pos, stack.pos))
+      if (indent) return new Context(context, context.depth + (+indent[0]), type_Lit)
+    }
     return context
   },
   hash(context) { return context.hash }
@@ -299,7 +310,7 @@ export const literals = new ExternalTokenizer((input, stack) => {
 })
 
 export const blockLiteral = new ExternalTokenizer((input, stack) => {
-  let indent = -1, upto = input.pos
+  let indent = stack.context.type == type_Lit ? stack.context.depth : -1, upto = input.pos
   scan: for (;;) {
     let depth = 0, next = input.next
     while (next == 32 /* ' ' */) next = input.peek(++depth)
