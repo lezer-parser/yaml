@@ -23,9 +23,9 @@ class Context {
     this.type = type
     this.hash = (parent ? parent.hash + parent.hash << 8 : 0) + depth + (depth << 4) + type
   }
-
-  static top = new Context(null, -1, type_Top)
 }
+
+Context.top = new Context(null, -1, type_Top)
 
 function findColumn(input, pos) {
   for (let col = 0, p = pos - input.pos - 1;; p--, col++) {
