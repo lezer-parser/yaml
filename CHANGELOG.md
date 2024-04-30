@@ -1,3 +1,9 @@
+## 1.0.3 (2024-04-30)
+
+### Bug fixes
+
+Avoid using class property syntax since many tools still can't handle that.
+
 ## 1.0.2 (2024-01-28)
 
 ### Bug fixes
