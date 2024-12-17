@@ -725,7 +725,7 @@ Stream(Comment,Comment,Document(BlockMapping(
     Pair(Key(Literal),FlowSequence(Comment,
       Item(Literal),Comment,
       Item(Literal),Comment,
-      Item(Literal),Comment)))))),Comment)
+      Item(Literal),Comment)),Comment)))))
 
 # Example 6.2 Indentation Indicators
 
