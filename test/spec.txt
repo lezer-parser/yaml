@@ -19,7 +19,7 @@ rbi: 147   # Runs Batted In
 Stream(Document(BlockMapping(
   Pair(Key(Literal),Literal),Comment,
   Pair(Key(Literal),Literal),Comment,
-  Pair(Key(Literal),Literal))),Comment)
+  Pair(Key(Literal),Literal),Comment)))
 
 # Example 2.3 Mapping Scalars to Sequences (ball clubs in each league)
 
@@ -115,8 +115,7 @@ Stream(Document(BlockMapping(
 
 Stream(
   Comment,
-  Document(DirectiveEnd,BlockSequence(Item(Literal),Item(Literal),Item(Literal))),
-  Comment,
+  Document(DirectiveEnd,BlockSequence(Item(Literal),Item(Literal),Item(Literal), Comment)),
   Document(DirectiveEnd,BlockSequence(Item(Literal),Item(Literal))))
 
 # Example 2.8 Play by Play Feed from a Game
@@ -158,8 +157,7 @@ Stream(Document(
   BlockMapping(
     Pair(Key(Literal),Comment,BlockSequence(
       Item(Literal),
-      Item(Literal))),
-  Comment,
+      Item(Literal),Comment)),
   Pair(Key(Literal),BlockSequence(
     Item(Literal),
     Item(Literal))))))
@@ -725,7 +723,7 @@ Stream(Comment,Comment,Document(BlockMapping(
     Pair(Key(Literal),FlowSequence(Comment,
       Item(Literal),Comment,
       Item(Literal),Comment,
-      Item(Literal),Comment)))))),Comment)
+      Item(Literal),Comment)),Comment)))))
 
 # Example 6.2 Indentation Indicators
 
@@ -1448,8 +1446,8 @@ Stream(Comment,Comment,Document(BlockMapping(
   Comment,Comment,
   Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
   Comment,Comment,
-  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)))),
-Comment,Comment)
+  Pair(Key(Literal),BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
+Comment,Comment)))
 
 # Example 8.6 Empty Scalar Chomping
 
@@ -1626,8 +1624,8 @@ Stream(Document(BlockMapping(
 Stream(Document(BlockSequence(
   Item,Comment,
   Item(BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),
-  Item(BlockSequence(Item(Literal),Comment,Item(Literal))),Comment,
-  Item(BlockMapping(Pair(Key(Literal),Literal))))),Comment)
+  Item(BlockSequence(Item(Literal),Comment,Item(Literal),Comment)),
+  Item(BlockMapping(Pair(Key(Literal),Literal),Comment)))))
 
 # Example 8.16 Block Mappings
 
@@ -1652,7 +1650,7 @@ Stream(Document(BlockMapping(
   Pair(Key(Literal)),Comment,
   Pair(Key(BlockLiteral(BlockLiteralHeader,BlockLiteralContent)),BlockSequence(
     Item(Literal),Comment,
-    Item(Literal))))),Comment)
+    Item(Literal),Comment)))))
 
 # Example 8.18 Implicit Block Mapping Entries
 
