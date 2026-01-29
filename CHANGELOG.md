@@ -1,3 +1,9 @@
+## 1.0.4 (2026-01-29)
+
+### Bug fixes
+
+Fix an issue in tokenizing anchors with trailing punctuation.
+
 ## 1.0.3 (2024-04-30)
 
 ### Bug fixes
