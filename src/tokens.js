@@ -196,7 +196,7 @@ function readTag(input) {
 
 function readAnchor(input) {
   input.advance()
-  while (!isSep(input.next) && charTag(input.tag) != "f") input.advance()
+  while (!isSep(input.next) && charTag(input.next) != "f") input.advance()
 }
   
 function readQuoted(input, scan) {
