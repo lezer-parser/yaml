@@ -1,3 +1,5 @@
+**This repository has moved to https://code.haverbeke.berlin/lezer/yaml**
+
 # @lezer/yaml
 
 This is a [YAML](https://yaml.org/) grammar for the
